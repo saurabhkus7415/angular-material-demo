@@ -13,6 +13,7 @@ import { MatInputModule } from '@angular/material/input';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDividerModule } from '@angular/material/divider';
 import { LocalService } from './core/service/local.service';
+import { of } from 'rxjs';
 export interface PeriodicElement {
   name: string;
   weight: number;
@@ -47,7 +48,7 @@ export class AppComponent implements OnInit {
   displayedColumns: string[] = ['name', 'weight', 'symbol'];
   _localStorage = inject(LocalService);
   listData: PeriodicElement[] = [];
-  dataSource = new MatTableDataSource<PeriodicElement>(this.listData);
+  dataSource = new MatTableDataSource<PeriodicElement>();
   toggleBadgeVisibility() {
     this.hidden = !this.hidden;
   }
@@ -59,10 +60,10 @@ export class AppComponent implements OnInit {
     this.onGetData();
   }
   onGetData() {
-    console.log(this._localStorage.getData('data') as any);
     this.listData = this._localStorage.getData('data') as any;
-
-    console.log(this.listData);
+    let data=of(this.listData)
+    // this.dataSource.data = data 
+    console.log(this.listData, this.dataSource);
   }
   onSubmit() {
     let formData = {
@@ -70,10 +71,6 @@ export class AppComponent implements OnInit {
       weight: this.weight.value,
       symbol: this.symbol.value,
     };
-    console.log(this.listData);
-
-    console.log(this.listData && this.listData.length);
-
     if (this.listData && this.listData.length) {
       this.listData.forEach((element: any) => {
         if (!element) {
