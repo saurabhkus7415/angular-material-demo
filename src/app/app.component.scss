@@ -43,6 +43,10 @@ section {
 }
 div {
   text-align: -webkit-center;
-  margin-top: 20px;
-  margin-bottom: 20px;
+  // margin-top: 20px;
+  // margin-bottom: 20px;
+}
+button.example-custom-date-class {
+  background: orange;
+  border-radius: 100%;
 }

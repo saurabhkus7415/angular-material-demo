@@ -1,4 +1,11 @@
-import { Component, NgModule, NgZone, OnInit, inject } from '@angular/core';
+import {
+  Component,
+  NgModule,
+  NgZone,
+  OnInit,
+  ViewEncapsulation,
+  inject,
+} from '@angular/core';
 
 import { MatTableDataSource } from '@angular/material/table';
 
@@ -14,10 +21,16 @@ import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDividerModule } from '@angular/material/divider';
 import { LocalService } from './core/service/local.service';
 import { of } from 'rxjs';
+import { provideNativeDateAdapter } from '@angular/material/core';
+import {
+  MatCalendarCellClassFunction,
+  MatDatepickerModule,
+} from '@angular/material/datepicker';
 export interface PeriodicElement {
   name: string;
   weight: string;
   symbol: string;
+  date: string;
 }
 
 // const ELEMENT_DATA: PeriodicElement[] = [
@@ -37,7 +50,7 @@ export interface PeriodicElement {
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
   standalone: true,
-
+  encapsulation: ViewEncapsulation.None,
   imports: [
     RouterOutlet,
     MatButtonToggleModule,
@@ -51,15 +64,26 @@ export interface PeriodicElement {
     FormsModule,
     ReactiveFormsModule,
     MatDividerModule,
+    MatDatepickerModule,
   ],
 })
 export class AppComponent implements OnInit {
   title = 'angular-material-project';
+  dateClass: MatCalendarCellClassFunction<Date> = (cellDate, view) => {
+    // Only highligh dates inside the month view.
+    if (view === 'month') {
+      const date = cellDate.getDate();
 
+      // Highlight the 1st and 20th day of each month.
+      return date === 1 || date === 20 ? 'example-custom-date-class' : '';
+    }
+
+    return '';
+  };
   hidden = false;
   _localStorage = inject(LocalService);
   listData: PeriodicElement[] = [];
-  displayedColumns: string[] = ['name', 'weight', 'symbol'];
+  displayedColumns: string[] = ['date', 'name', 'weight', 'symbol'];
   dataSource = this.listData;
   toggleBadgeVisibility() {
     this.hidden = !this.hidden;
@@ -67,6 +91,7 @@ export class AppComponent implements OnInit {
   name = new FormControl();
   weight = new FormControl();
   symbol = new FormControl();
+  date = new FormControl();
 
   ngOnInit(): void {
     this.onGetData();
@@ -88,6 +113,7 @@ export class AppComponent implements OnInit {
       name: this.name.value,
       weight: this.weight.value,
       symbol: this.symbol.value,
+      date: this.date.value,
     };
 
     this.listData.push(formData);
@@ -104,5 +130,6 @@ export class AppComponent implements OnInit {
     this.name.reset();
     this.weight.reset();
     this.symbol.reset();
+    this.date.reset();
   }
 }
