@@ -1,4 +1,4 @@
-import { Component, NgModule, OnInit, inject } from '@angular/core';
+import { Component, NgModule, NgZone, OnInit, inject } from '@angular/core';
 
 import { MatTableDataSource } from '@angular/material/table';
 
@@ -16,10 +16,22 @@ import { LocalService } from './core/service/local.service';
 import { of } from 'rxjs';
 export interface PeriodicElement {
   name: string;
-  weight: number;
+  weight: string;
   symbol: string;
 }
 
+// const ELEMENT_DATA: PeriodicElement[] = [
+//   { position: 1, name: 'Hydrogen', weight: 1.0079, symbol: 'H' },
+//   { position: 2, name: 'Helium', weight: 4.0026, symbol: 'He' },
+//   { position: 3, name: 'Lithium', weight: 6.941, symbol: 'Li' },
+//   { position: 4, name: 'Beryllium', weight: 9.0122, symbol: 'Be' },
+//   { position: 5, name: 'Boron', weight: 10.811, symbol: 'B' },
+//   { position: 6, name: 'Carbon', weight: 12.0107, symbol: 'C' },
+//   { position: 7, name: 'Nitrogen', weight: 14.0067, symbol: 'N' },
+//   { position: 8, name: 'Oxygen', weight: 15.9994, symbol: 'O' },
+//   { position: 9, name: 'Fluorine', weight: 18.9984, symbol: 'F' },
+//   { position: 10, name: 'Neon', weight: 20.1797, symbol: 'Ne' },
+// ];
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -45,10 +57,10 @@ export class AppComponent implements OnInit {
   title = 'angular-material-project';
 
   hidden = false;
-  displayedColumns: string[] = ['name', 'weight', 'symbol'];
   _localStorage = inject(LocalService);
   listData: PeriodicElement[] = [];
-  dataSource = new MatTableDataSource<PeriodicElement>();
+  displayedColumns: string[] = ['name', 'weight', 'symbol'];
+  dataSource = this.listData;
   toggleBadgeVisibility() {
     this.hidden = !this.hidden;
   }
@@ -59,11 +71,17 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     this.onGetData();
   }
+
   onGetData() {
-    this.listData = this._localStorage.getData('data') as any;
-    let data=of(this.listData)
-    // this.dataSource.data = data 
-    console.log(this.listData, this.dataSource);
+    let data;
+    data = this._localStorage.getData('data') as any;
+    if (data) {
+      this.listData = JSON.parse(data);
+      this.dataSource = this.listData;
+    } else {
+      this.dataSource = [];
+    }
+    console.log(this.listData, 'this is a data source', this.dataSource);
   }
   onSubmit() {
     let formData = {
@@ -71,20 +89,14 @@ export class AppComponent implements OnInit {
       weight: this.weight.value,
       symbol: this.symbol.value,
     };
-    if (this.listData && this.listData.length) {
-      this.listData.forEach((element: any) => {
-        if (!element) {
-          this.listData.push(formData);
-        }
-      });
-      this._localStorage.saveData('data', JSON.stringify(this.listData));
-    } else {
-      this.listData = [];
-      this.listData.push(formData);
-      this._localStorage.saveData('data', JSON.stringify(this.listData));
-    }
-    this.onCancel();
+
+    this.listData.push(formData);
+    this._localStorage.saveData('data', JSON.stringify(this.listData));
     this.onGetData();
+
+    console.log(this.dataSource);
+
+    this.onCancel();
     console.log(formData, this.listData);
   }
 
