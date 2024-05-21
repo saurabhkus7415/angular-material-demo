@@ -1,0 +1,96 @@
+<div class="example-focus-monitor">
+  <h3>Using Accessibility</h3>
+  <button
+    cdkMonitorSubtreeFocus
+    (cdkFocusChange)="elementOrigin = formatOrigin($event); markForCheck()"
+  >
+    Focus Monitored Element ({{ elementOrigin }})
+  </button>
+</div>
+<hr />
+<cdk-accordion class="example-accordion">
+  <h3>Using Accordion</h3>
+  @for (item of items; track item; let index = $index) {
+  <cdk-accordion-item
+    #accordionItem="cdkAccordionItem"
+    class="example-accordion-item"
+    role="button"
+    tabindex="0"
+    [attr.id]="'accordion-header-' + index"
+    [attr.aria-expanded]="accordionItem.expanded"
+    [attr.aria-controls]="'accordion-body-' + index"
+  >
+    <div class="example-accordion-item-header" (click)="accordionItem.toggle()">
+      {{ item }}
+      <span class="example-accordion-item-description">
+        Click to {{ accordionItem.expanded ? "close" : "open" }}
+      </span>
+    </div>
+    <div
+      class="example-accordion-item-body"
+      role="region"
+      [style.display]="accordionItem.expanded ? '' : 'none'"
+      [attr.id]="'accordion-body-' + index"
+      [attr.aria-labelledby]="'accordion-header-' + index"
+    >
+      Lorem ipsum dolor, sit amet consectetur adipisicing elit. Perferendis
+      excepturi incidunt ipsum deleniti labore, tempore non nam doloribus
+      blanditiis veritatis illo autem iure aliquid ullam rem tenetur deserunt
+      velit culpa?
+    </div>
+  </cdk-accordion-item>
+  }
+</cdk-accordion>
+<hr />
+<h3>Using Clipboard</h3>
+<label for="clipboard-example-textarea">Text to be copied </label>
+<textarea
+  id="clipboard-example-textarea"
+  cols="30"
+  rows="10"
+  [(ngModel)]="value"
+></textarea>
+<button [cdkCopyToClipboard]="value">Copy to clipboard</button>
+<hr />
+<h3>Using Dialog</h3>
+<ol>
+  <li>
+    <label id="dialog-user-name">What's your name?</label>
+    <input for="dialog-user-name" [(ngModel)]="name" />
+  </li>
+  <li>
+    <button (click)="openDialog()">Pick one</button>
+  </li>
+  @if (animal) {
+  <li>
+    You chose: <em>{{ animal }}</em>
+  </li>
+  }
+</ol>
+<hr />
+<h3>Using Drag</h3>
+<div class="example-box" cdkDrag>Drag me around</div>
+<hr>
+<h3>Using Layout</h3>
+<p>
+    Resize your browser window to see the current screen size change.
+  </p>
+  <p>
+    The current screen size is <strong>{{currentScreenSize}}</strong>
+  </p>
+  <hr>
+  <h3>List Box</h3>
+  <div class="example-listbox-container">
+    <label class="example-listbox-label" id="example-spatula-label">
+      Spatula Features
+    </label>
+    <ul cdkListbox
+        cdkListboxMultiple
+        cdkListboxUseActiveDescendant
+        aria-labelledby="example-spatula-label"
+        class="example-listbox">
+      @for (feature of features; track feature) {
+        <li [cdkOption]="feature" class="example-option">{{feature}}</li>
+      }
+    </ul>
+  </div>
