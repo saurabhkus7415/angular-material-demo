@@ -5,6 +5,11 @@ import {
   Inject,
   NgZone,
   OnDestroy,
+  AfterViewInit,
+  TemplateRef,
+  ViewChild,
+  ViewContainerRef,
+  ElementRef,
 } from '@angular/core';
 import { CdkAccordionModule } from '@angular/cdk/accordion';
 import { ClipboardModule } from '@angular/cdk/clipboard';
@@ -15,11 +20,26 @@ import {
   DIALOG_DATA,
   DialogModule,
 } from '@angular/cdk/dialog';
+import { OverlayModule } from '@angular/cdk/overlay';
 import { CdkDrag } from '@angular/cdk/drag-drop';
 import { Subject } from 'rxjs';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { takeUntil } from 'rxjs/operators';
 import { CdkListbox, CdkOption } from '@angular/cdk/listbox';
+import { CdkContextMenuTrigger, CdkMenuItem, CdkMenu } from '@angular/cdk/menu';
+import {
+  getSupportedInputTypes,
+  Platform,
+  supportsPassiveEventListeners,
+  supportsScrollBehavior,
+} from '@angular/cdk/platform';
+import {
+  ComponentPortal,
+  DomPortal,
+  Portal,
+  TemplatePortal,
+  PortalModule,
+} from '@angular/cdk/portal';
 export interface DialogData {
   animal: string;
   name: string;
@@ -37,13 +57,27 @@ export interface DialogData {
     CdkDrag,
     CdkListbox,
     CdkOption,
+    CdkContextMenuTrigger,
+    CdkMenu,
+    CdkMenuItem,
+    OverlayModule,
+    PortalModule,
   ],
   templateUrl: './cdk.component.html',
   styleUrl: './cdk.component.scss',
 })
 export class CdkComponent implements OnDestroy {
   destroyed = new Subject<void>();
+  isOpen = false;
   currentScreenSize!: string;
+  @ViewChild('templatePortalContent')
+  templatePortalContent!: TemplateRef<unknown>;
+  @ViewChild('domPortalContent') domPortalContent!: ElementRef<HTMLElement>;
+
+  selectedPortal!: Portal<any>;
+  componentPortal!: ComponentPortal<ComponentPortalExample>;
+  templatePortal!: TemplatePortal<any>;
+  domPortal!: DomPortal<any>;
   features = ['Hydrodynamic', 'Port & Starboard Attachments', 'Turbo Drive'];
   // Create a map to display breakpoint names for demonstration purposes.
   displayNameMap = new Map([
@@ -55,6 +89,9 @@ export class CdkComponent implements OnDestroy {
   ]);
   animal: string | undefined;
   name!: string;
+  supportedInputTypes = Array.from(getSupportedInputTypes()).join(', ');
+  supportsPassiveEventListeners = supportsPassiveEventListeners();
+  supportsScrollBehavior = supportsScrollBehavior();
   value =
     `Did you ever hear the tragedy of Darth Plagueis The Wise? I thought not. It's not ` +
     `a story the Jedi would tell you. It's a Sith legend. Darth Plagueis was a Dark Lord ` +
@@ -70,10 +107,12 @@ export class CdkComponent implements OnDestroy {
   items = ['Item 1', 'Item 2', 'Item 3', 'Item 4', 'Item 5'];
   expandedIndex = 0;
   constructor(
+    public platform: Platform,
     private _ngZone: NgZone,
     private _cdr: ChangeDetectorRef,
     public dialog: Dialog,
-    breakpointObserver: BreakpointObserver
+    breakpointObserver: BreakpointObserver,
+    private _viewContainerRef: ViewContainerRef
   ) {
     breakpointObserver
       .observe([
@@ -96,7 +135,11 @@ export class CdkComponent implements OnDestroy {
   formatOrigin(origin: FocusOrigin): string {
     return origin ? origin + ' focused' : 'blurred';
   }
-
+  ngAfterViewInit() {
+    this.componentPortal = new ComponentPortal(ComponentPortalExample);
+    this.templatePortal = new TemplatePortal(this.templatePortalContent, this._viewContainerRef);
+    this.domPortal = new DomPortal(this.domPortalContent);
+  }
   // Workaround for the fact that (cdkFocusChange) emits outside NgZone.
   markForCheck() {
     this._ngZone.run(() => this._cdr.markForCheck());
@@ -111,6 +154,9 @@ export class CdkComponent implements OnDestroy {
       console.log('The dialog was closed');
       this.animal = result;
     });
+  }
+  projectContentChanged() {
+    console.log('hit!');
   }
   ngOnDestroy() {
     this.destroyed.next();
@@ -130,3 +176,9 @@ export class CdkDialogOverviewExampleDialog {
     @Inject(DIALOG_DATA) public data: DialogData
   ) {}
 }
+@Component({
+  selector: 'component-portal-example',
+  template: 'Hello, this is a component portal',
+  standalone: true,
+})
+export class ComponentPortalExample {}
