@@ -1,0 +1,198 @@
+<div class="example-focus-monitor">
+  <h3>Using Accessibility</h3>
+  <button
+    cdkMonitorSubtreeFocus
+    (cdkFocusChange)="elementOrigin = formatOrigin($event); markForCheck()"
+  >
+    Focus Monitored Element ({{ elementOrigin }})
+  </button>
+</div>
+<hr />
+<cdk-accordion class="example-accordion">
+  <h3>Using Accordion</h3>
+  @for (item of items; track item; let index = $index) {
+  <cdk-accordion-item
+    #accordionItem="cdkAccordionItem"
+    class="example-accordion-item"
+    role="button"
+    tabindex="0"
+    [attr.id]="'accordion-header-' + index"
+    [attr.aria-expanded]="accordionItem.expanded"
+    [attr.aria-controls]="'accordion-body-' + index"
+  >
+    <div class="example-accordion-item-header" (click)="accordionItem.toggle()">
+      {{ item }}
+      <span class="example-accordion-item-description">
+        Click to {{ accordionItem.expanded ? "close" : "open" }}
+      </span>
+    </div>
+    <div
+      class="example-accordion-item-body"
+      role="region"
+      [style.display]="accordionItem.expanded ? '' : 'none'"
+      [attr.id]="'accordion-body-' + index"
+      [attr.aria-labelledby]="'accordion-header-' + index"
+    >
+      Lorem ipsum dolor, sit amet consectetur adipisicing elit. Perferendis
+      excepturi incidunt ipsum deleniti labore, tempore non nam doloribus
+      blanditiis veritatis illo autem iure aliquid ullam rem tenetur deserunt
+      velit culpa?
+    </div>
+  </cdk-accordion-item>
+  }
+</cdk-accordion>
+<hr />
+<h3>Using Clipboard</h3>
+<label for="clipboard-example-textarea">Text to be copied </label>
+<textarea
+  id="clipboard-example-textarea"
+  cols="30"
+  rows="10"
+  [(ngModel)]="value"
+></textarea>
+<button [cdkCopyToClipboard]="value">Copy to clipboard</button>
+<hr />
+<h3>Using Dialog</h3>
+<ol>
+  <li>
+    <label id="dialog-user-name">What's your name?</label>
+    <input for="dialog-user-name" [(ngModel)]="name" />
+  </li>
+  <li>
+    <button (click)="openDialog()">Pick one</button>
+  </li>
+  @if (animal) {
+  <li>
+    You chose: <em>{{ animal }}</em>
+  </li>
+  }
+</ol>
+<hr />
+<h3>Using Drag</h3>
+<div class="example-box" cdkDrag>Drag me around</div>
+<hr>
+<h3>Using Layout</h3>
+<p>
+    Resize your browser window to see the current screen size change.
+  </p>
+  <p>
+    The current screen size is <strong>{{currentScreenSize}}</strong>
+  </p>
+  <hr>
+  <h3>List Box</h3>
+  <div class="example-listbox-container">
+    <label class="example-listbox-label" id="example-spatula-label">
+      Spatula Features
+    </label>
+    <ul cdkListbox
+        cdkListboxMultiple
+        cdkListboxUseActiveDescendant
+        aria-labelledby="example-spatula-label"
+        class="example-listbox">
+      @for (feature of features; track feature) {
+        <li [cdkOption]="feature" class="example-option">{{feature}}</li>
+      }
+    </ul>
+  </div>
+  <hr>
+  <h3>Menu</h3>
+  <div [cdkContextMenuTriggerFor]="context_menu">
+    Did you ever hear the tragedy of Darth Plagueis The Wise? I thought not. It's not a story the Jedi
+    would tell you. It's a Sith legend. Darth Plagueis was a Dark Lord of the Sith, so powerful and so
+    wise he could use the Force to influence the midichlorians to create life… He had such a knowledge
+    of the dark side that he could even keep the ones he cared about from dying. The dark side of the
+    Force is a pathway to many abilities some consider to be unnatural. He became so powerful… the
+    only thing he was afraid of was losing his power, which eventually, of course, he did.
+    Unfortunately, he taught his apprentice everything he knew, then his apprentice killed him in his
+    sleep. Ironic. He could save others from death, but not himself.
+  </div>
+  
+  <ng-template #context_menu>
+    <div class="example-menu" cdkMenu>
+      <button class="example-menu-item" cdkMenuItem>Cut</button>
+      <button class="example-menu-item" cdkMenuItem>Copy</button>
+      <button class="example-menu-item" cdkMenuItem>Link</button>
+    </div>
+  </ng-template>
+  <hr>
+
+  <div class="example-menu" cdkMenu>
+    <button class="example-menu-item" cdkMenuItem>Inbox</button>
+    <button class="example-menu-item" cdkMenuItem>Snoozed</button>
+    <button class="example-menu-item" cdkMenuItem>Important</button>
+    <button class="example-menu-item" cdkMenuItem>Sent</button>
+    <button class="example-menu-item" cdkMenuItem>Drafts</button>
+    <button class="example-menu-item" cdkMenuItem>All Mail</button>
+  </div>
+  <hr>
+  <div class="example-context-area" [cdkContextMenuTriggerFor]="outer">
+    Outer context menu
+    <div class="example-context-area" [cdkContextMenuTriggerFor]="inner">Inner context menu</div>
+  </div>
+  
+  <ng-template #outer>
+    <div class="example-menu" cdkMenu>
+      <button class="example-menu-item" cdkMenuItem>Save</button>
+      <button class="example-menu-item" cdkMenuItem>Exit</button>
+    </div>
+  </ng-template>
+  
+  <ng-template #inner>
+    <div class="example-menu" cdkMenu>
+      <button class="example-menu-item" cdkMenuItem>Cut</button>
+      <button class="example-menu-item" cdkMenuItem>Copy</button>
+      <button class="example-menu-item" cdkMenuItem>Paste</button>
+    </div>
+  </ng-template>
+  <hr>
+  <h3>Observe Content</h3>
+  <!-- <div class="projected-content-wrapper" (cdkObserveContent)="projectContentChanged()">
+    <ng-content></ng-content>
+
+  </div> -->
+  <hr>
+  <h3>Over Lays</h3>
+  <!-- This button triggers the overlay and is it's origin -->
+<button (click)="isOpen = !isOpen" type="button" cdkOverlayOrigin #trigger="cdkOverlayOrigin">
+  {{isOpen ? "Close" : "Open"}}
+</button>
+
+<!-- This template displays the overlay content and is connected to the button -->
+<ng-template
+  cdkConnectedOverlay
+  [cdkConnectedOverlayOrigin]="trigger"
+  [cdkConnectedOverlayOpen]="isOpen"
+>
+  <ul class="example-list">
+    <li>Item 1</li>
+    <li>Item 2</li>
+    <li>Item 3</li>
+  </ul>
+</ng-template>
+<hr>
+<h3>Platform</h3>
+<h2>Platform information:</h2>
+<p>Is Android: {{platform.ANDROID}}</p>
+<p>Is iOS: {{platform.IOS}}</p>
+<p>Is Firefox: {{platform.FIREFOX}}</p>
+<p>Is Blink: {{platform.BLINK}}</p>
+<p>Is Webkit: {{platform.WEBKIT}}</p>
+<p>Is Trident: {{platform.TRIDENT}}</p>
+<p>Is Edge: {{platform.EDGE}}</p>
+<p>Is Safari: {{platform.SAFARI}}</p>
+<p>Supported input types: {{supportedInputTypes}}</p>
+<p>Supports passive event listeners: {{supportsPassiveEventListeners}}</p>
+<p>Supports scroll behavior: {{supportsScrollBehavior}}</p>
+<hr>
+<h3>Portal</h3>
+<h2>The portal outlet is below:</h2>
+<div class="example-portal-outlet">
+  <ng-template [cdkPortalOutlet]="selectedPortal"></ng-template>
+</div>
+<ng-template #templatePortalContent>Hello, this is a template portal</ng-template>
+
+<button (click)="selectedPortal = componentPortal">Render component portal</button>
+<button (click)="selectedPortal = templatePortal">Render template portal</button>
+<button (click)="selectedPortal = domPortal">Render DOM portal</button>
+
+<div #domPortalContent>Hello, this is a DOM portal</div>
